@@ -1,0 +1,86 @@
+:root {
+  --primary: #2563eb;
+  --accent: #f43f5e; 
+  --wa: #25D366;    
+  --bg: #f8fafc;
+  --text: #1e293b;
+  --footer-bg: #1e293b;
+  --border: #e2e8f0;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+
+body { 
+  background-color: var(--bg); 
+  color: var(--text); 
+  display: flex; flex-direction: column; min-height: 100vh;
+}
+
+/* --- HEADER --- */
+header { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100; }
+.header-main { padding: 15px 0; border-bottom: 1px solid #f1f5f9; }
+.header-wrapper { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; gap: 20px; }
+.logo { font-weight: 900; font-size: 1.5rem; color: var(--primary); display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+.search-box { flex-grow: 1; }
+.search-box input { width: 100%; padding: 10px 20px; border-radius: 8px; border: 1px solid var(--border); background: #f8fafc; outline: none; transition: 0.3s; }
+.search-box input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+.header-icons { display: flex; gap: 15px; color: #64748b; cursor: pointer; display: none; } /* Hidden di HP */
+
+/* Navbar Desktop */
+.navbar { background: white; border-bottom: 1px solid #e2e8f0; overflow-x: auto; display: none; } /* Hidden di HP */
+.nav-wrapper { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; gap: 25px; }
+.nav-link { padding: 12px 0; text-decoration: none; color: #475569; font-size: 0.9rem; font-weight: 500; white-space: nowrap; cursor: pointer; }
+.nav-link:hover { color: var(--primary); }
+
+/* --- CONTENT --- */
+.main-content { flex-grow: 1; padding-bottom: 40px; }
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+/* Banner */
+.banner { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; padding: 30px 20px; border-radius: 12px; margin-bottom: 25px; text-align: center; }
+.banner h2 { font-size: 1.8rem; margin-bottom: 5px; }
+
+/* Filter Chips */
+.kategori-menu { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 5px; }
+.btn-kategori { padding: 8px 20px; border-radius: 50px; background: white; border: 1px solid var(--border); color: #64748b; cursor: pointer; transition: 0.2s; font-weight: 600; white-space: nowrap; }
+.btn-kategori.active, .btn-kategori:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+/* Grid Produk */
+.grid-produk { display: grid; gap: 15px; grid-template-columns: repeat(2, 1fr); /* Default HP 2 Kolom */ }
+
+/* Card */
+.card { background: white; border-radius: 10px; border: 1px solid var(--border); overflow: hidden; display: flex; flex-direction: column; transition: 0.2s; }
+.card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+.card-img-wrapper { background: white; height: 160px; padding: 15px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #f1f5f9; }
+.card img { object-fit: contain; max-width: 100%; max-height: 100%; width: auto; height: auto; }
+.card-body { padding: 12px; display: flex; flex-direction: column; flex-grow: 1; }
+.label-kategori { font-size: 0.65rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; }
+.card h4 { font-size: 0.95rem; margin-bottom: 8px; flex-grow: 1; line-height: 1.4; color: #334155; }
+.harga { color: var(--accent); font-weight: 800; font-size: 1rem; margin-bottom: 12px; }
+.btn-beli { display: block; width: 100%; background: white; color: var(--primary); border: 1px solid var(--primary); text-align: center; padding: 8px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: 0.2s; }
+.btn-beli:hover { background: var(--primary); color: white; }
+
+/* --- FOOTER --- */
+footer { background: var(--footer-bg); color: #94a3b8; padding: 40px 0 20px; margin-top: auto; }
+.footer-grid { display: grid; grid-template-columns: 1fr; gap: 30px; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+.footer-col h5 { color: white; margin-bottom: 15px; font-size: 1rem; }
+.footer-col p, .footer-col a { display: block; margin-bottom: 8px; font-size: 0.9rem; color: #94a3b8; text-decoration: none; cursor: pointer; }
+.footer-col a:hover { color: white; }
+.copyright { border-top: 1px solid #334155; margin-top: 40px; padding-top: 20px; text-align: center; font-size: 0.8rem; }
+
+/* --- MODAL (POP UP) --- */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 200; backdrop-filter: blur(2px); }
+.modal-content { background: white; padding: 25px; border-radius: 12px; max-width: 500px; width: 90%; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideUp 0.3s ease; }
+.modal-close { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #94a3b8; }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* Float WA */
+.float-wa { position: fixed; bottom: 25px; right: 25px; background: var(--wa); color: white; padding: 12px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); display: flex; align-items: center; gap: 8px; z-index: 90; }
+
+/* --- RESPONSIVE DESKTOP (Min Width 768px) --- */
+@media (min-width: 768px) {
+  .grid-produk { grid-template-columns: repeat(4, 1fr); }
+  .header-icons, .navbar { display: flex; } /* Munculkan Menu Desktop */
+  .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; }
+  .banner { padding: 50px; text-align: left; }
+}
