@@ -1,210 +1,331 @@
 import './style.css'
-import { produk } from './data.js'
+import { ambilDataProduk } from './data.js'
 
-// 1. INJECT STRUKTUR HTML UTAMA
+// --- STATE GLOBAL ---
+let semuaProduk = [];
+let keranjang = [];
+let produkTerpilih = null; // Produk yg lagi dibuka detailnya
+let pilihanWarna = null;
+let pilihanSize = null;
+
+// Helper Rupiah
+const formatRupiah = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+
+// 1. SETUP HTML
 document.querySelector('#app').innerHTML = `
   <header>
     <div class="header-main">
       <div class="header-wrapper">
-        <div class="logo">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-          Toko Andra
-        </div>
-        <div class="search-box">
-          <input type="text" id="searchInput" placeholder="Cari: Jaket, Kaos...">
-        </div>
-        <div class="header-icons">
-          <span>🔔</span>
-          <span>🛒</span>
-        </div>
+        <div class="logo">🛍️ Toko Andra</div>
+        <div class="search-box"><input type="text" id="searchInput" placeholder="Cari baju..."></div>
       </div>
     </div>
-    
-    <nav class="navbar">
-      <div class="nav-wrapper">
-        <a class="nav-link" onclick="location.reload()">Beranda</a>
-        <a class="nav-link" onclick="bukaModal('cara')">Cara Pesan</a>
-        <a class="nav-link" onclick="bukaModal('tentang')">Tentang Kami</a>
-        <a class="nav-link" onclick="bukaModal('retur')">Garansi</a>
-      </div>
-    </nav>
   </header>
 
   <div class="main-content">
     <div class="container">
-      
-      <div class="banner">
-        <h2>FLASH SALE ⚡</h2>
-        <p>Diskon spesial pembukaan toko baru!</p>
-      </div>
-
+      <div class="banner"><h2>FLASH SALE ⚡</h2><p>Spesial Hari Ini!</p></div>
       <div class="kategori-menu">
         <button class="btn-kategori active" onclick="filterProduk('all', this)">Semua</button>
         <button class="btn-kategori" onclick="filterProduk('Jaket', this)">Jaket</button>
         <button class="btn-kategori" onclick="filterProduk('Kaos', this)">Kaos</button>
         <button class="btn-kategori" onclick="filterProduk('Celana', this)">Celana</button>
       </div>
-
-      <div class="section-title" style="margin-bottom:15px; font-weight:700; font-size:1.1rem; color:#334155;">
-        Produk Terbaru
-      </div>
-
       <div id="produk-container" class="grid-produk"></div>
-      
-      <div id="empty-state" style="display:none; text-align:center; padding: 50px; color:#94a3b8;">
-        <p>Produk tidak ditemukan 😢</p>
-      </div>
+      <div id="empty-state" style="display:none; text-align:center; padding:50px;">Produk tidak ditemukan</div>
     </div>
   </div>
 
-  <footer>
-    <div class="footer-grid">
-      <div class="footer-col">
-        <h5 style="color:#2563eb; font-weight:800; font-size:1.2rem;">Toko Andra</h5>
-        <p>Platform belanja fashion pria terpercaya. Kualitas distro, harga kawan.</p>
-        <p>📍 Surabaya, Jawa Timur</p>
-      </div>
-      <div class="footer-col">
-        <h5>INFO</h5>
-        <a onclick="bukaModal('tentang')">Tentang Kami</a>
-        <a onclick="bukaModal('cara')">Cara Pesan</a>
-        <a onclick="bukaModal('retur')">Kebijakan Retur</a>
-      </div>
-      <div class="footer-col">
-        <h5>KONTAK</h5>
-        <a href="https://wa.me/6281234567890" target="_blank">WhatsApp Admin</a>
-        <a href="#">Instagram</a>
-      </div>
-      <div class="footer-col">
-        <h5>PEMBAYARAN</h5>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-           <div style="background:white; padding:4px 8px; border-radius:4px; font-weight:bold; font-size:0.7rem; color:#1e293b;">BCA</div>
-           <div style="background:white; padding:4px 8px; border-radius:4px; font-weight:bold; font-size:0.7rem; color:#1e293b;">DANA</div>
-           <div style="background:white; padding:4px 8px; border-radius:4px; font-weight:bold; font-size:0.7rem; color:#1e293b;">QRIS</div>
-        </div>
-      </div>
-    </div>
-    <div class="copyright">
-      &copy; 2025 Toko Andra Commerce. All rights reserved.
-    </div>
-  </footer>
+  <div id="modalDetail" class="modal-overlay">
+    <div class="modal-content" style="max-width: 700px;"> <span class="modal-close" onclick="tutupDetail()">&times;</span>
+      <div id="kontenDetail"></div> </div>
+  </div>
 
-  <a href="https://wa.me/6281234567890" target="_blank" class="float-wa">
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.463 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
-    Chat Andra
-  </a>
+  <div id="modalKeranjang" class="modal-overlay">
+    <div class="modal-content">
+      <span class="modal-close" onclick="tutupKeranjang()">&times;</span>
+      <h3>Keranjang Belanja</h3>
+      <div id="listBelanjaan" class="cart-items"></div>
+      
+      <div class="cart-total" style="margin-top:10px;">Total: <span id="totalHarga">Rp 0</span></div>
+      <button onclick="checkoutWA()" class="btn-checkout">Checkout via WA</button>
+    </div>
+  </div>
+
+  <div id="tombolKeranjang" class="float-cart" onclick="bukaKeranjang()">
+    <span>🛒</span><span id="jmlItem">0</span>
+  </div>
 `
 
-// 2. MODAL HTML INJECTION
-const modalHTML = `
-  <div id="infoModal" class="modal-overlay">
-    <div class="modal-content">
-      <span class="modal-close" onclick="tutupModal()">&times;</span>
-      <h3 id="modalTitle" style="margin-bottom:15px; color:#2563eb;">Judul</h3>
-      <div id="modalBody" style="line-height:1.6; color:#475569; font-size:0.95rem;">Isi konten...</div>
-    </div>
-  </div>
-`;
-document.body.insertAdjacentHTML('beforeend', modalHTML);
-
-// 3. LOGIC UTAMA (Render Produk)
-const formatRupiah = (angka) => {
-  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
-}
-
-const renderProduk = (dataProduk) => {
+// 2. RENDER GRID DEPAN (Cuma Tombol Lihat)
+const renderProduk = (data) => {
   const container = document.getElementById('produk-container');
-  const emptyState = document.getElementById('empty-state');
+  container.innerHTML = '';
   
-  container.innerHTML = ''; 
+  if (data.length === 0) {
+    document.getElementById('empty-state').style.display = 'block'; return;
+  } else { document.getElementById('empty-state').style.display = 'none'; }
 
-  if (dataProduk.length === 0) {
-    emptyState.style.display = 'block';
-    return;
-  } else {
-    emptyState.style.display = 'none';
-  }
-
-  dataProduk.forEach(item => {
-    const nomorAndra = "6281234567890"; // GANTI NOMOR WA DISINI
-    const pesan = `Halo gan, saya mau pesan *${item.nama}* harga ${formatRupiah(item.harga)}. Stok aman?`;
-    const linkWA = `https://wa.me/${nomorAndra}?text=${encodeURIComponent(pesan)}`;
+  data.forEach(item => {
+    // Logic Harga Coret
+    let hargaHTML = `<div class="harga-jual">${formatRupiah(item.harga_jual)}</div>`;
+    if (item.harga_asli > item.harga_jual) {
+      hargaHTML = `<div class="harga-coret">${formatRupiah(item.harga_asli)}</div>` + hargaHTML;
+    }
 
     const card = `
-        <div class="card">
-            <div class="card-img-wrapper">
-               <img src="${item.gambar}" alt="${item.nama}" loading="lazy">
-            </div>
-            <div class="card-body">
-                <span class="label-kategori">${item.kategori}</span>
-                <h4>${item.nama}</h4>
-                <div class="harga">${formatRupiah(item.harga)}</div>
-                <a href="${linkWA}" target="_blank" class="btn-beli">
-                  Beli Sekarang
-                </a>
-            </div>
+      <div class="card" onclick="bukaDetailProduk(${item.id})" style="cursor:pointer;">
+        <div class="card-img-wrapper">
+          <img src="${convertLink(item.gambar)}" loading="lazy">
         </div>
+        <div class="card-body">
+          <span class="label-kategori">${item.kategori}</span>
+          <h4>${item.nama}</h4>
+          <div class="card-harga-wrapper">${hargaHTML}</div>
+          <button class="btn-keranjang" style="background:#f1f5f9; border:none; color:#334155;">
+            Lihat Produk
+          </button>
+        </div>
+      </div>
     `;
     container.innerHTML += card;
   });
 }
 
-// 4. LOGIC EVENT HANDLER (Global Scope)
-window.filterProduk = (kategori, element) => {
-  document.querySelectorAll('.btn-kategori').forEach(btn => btn.classList.remove('active'));
-  element.classList.add('active');
+// 3. LOGIC DETAIL PRODUK (Pilih Size/Warna)
+window.bukaDetailProduk = (id) => {
+  const item = semuaProduk.find(p => p.id == id);
+  produkTerpilih = item;
+  pilihanWarna = null; // Reset pilihan
+  pilihanSize = null;
 
-  if (kategori === 'all') {
-    renderProduk(produk);
+  // Parsing varian dari CSV (Dipisah koma)
+  const warnas = item.warna ? item.warna.split(',').map(s => s.trim()) : [];
+  const sizes = item.size ? item.size.split(',').map(s => s.trim()) : [];
+
+  // Generate HTML Tombol Warna
+  let warnaHTML = warnas.length > 0 ? `<div class="varian-title">Pilih Warna:</div><div class="varian-wrapper">` : '';
+  warnas.forEach(w => {
+    warnaHTML += `<button class="btn-varian" onclick="pilihVarian('warna', '${w}', this)">${w}</button>`;
+  });
+  if(warnas.length > 0) warnaHTML += `</div>`;
+
+  // Generate HTML Tombol Size
+  let sizeHTML = sizes.length > 0 ? `<div class="varian-title">Pilih Ukuran:</div><div class="varian-wrapper">` : '';
+  sizes.forEach(s => {
+    sizeHTML += `<button class="btn-varian" onclick="pilihVarian('size', '${s}', this)">${s}</button>`;
+  });
+  if(sizes.length > 0) sizeHTML += `</div>`;
+
+  // Render Modal
+  const konten = document.getElementById('kontenDetail');
+  konten.innerHTML = `
+    <div class="modal-body-grid">
+      <div>
+        <img src="${convertLink(item.gambar)}" class="detail-img">
+      </div>
+      <div class="detail-info">
+        <h3>${item.nama}</h3>
+        <div class="detail-price">${formatRupiah(item.harga_jual)}</div>
+        <div class="detail-desc">${item.deskripsi || 'Tidak ada deskripsi.'}</div>
+        
+        ${warnaHTML}
+        ${sizeHTML}
+
+        <div class="detail-actions">
+          <button id="btnAction" class="btn-add-cart" onclick="masukinKeranjang()">
+            + Masukkan Keranjang
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.getElementById('modalDetail').style.display = 'flex';
+}
+
+window.pilihVarian = (tipe, nilai, el) => {
+  // Logic styling tombol (active state)
+  const parent = el.parentElement;
+  parent.querySelectorAll('.btn-varian').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+
+  if (tipe === 'warna') pilihanWarna = nilai;
+  if (tipe === 'size') pilihanSize = nilai;
+}
+
+window.tutupDetail = () => document.getElementById('modalDetail').style.display = 'none';
+
+// 4. MASUK KERANJANG (Validasi Wajib Pilih)
+window.masukinKeranjang = () => {
+  // Cek apakah produk punya varian? Kalau punya, wajib dipilih.
+  const punyaWarna = produkTerpilih.warna && produkTerpilih.warna.trim() !== '';
+  const punyaSize = produkTerpilih.size && produkTerpilih.size.trim() !== '';
+
+  if (punyaWarna && !pilihanWarna) { alert('Tolong pilih warna dulu bosku!'); return; }
+  if (punyaSize && !pilihanSize) { alert('Tolong pilih ukuran dulu bosku!'); return; }
+
+  // Buat ID unik berdasarkan varian (biar Kaos Hitam & Kaos Putih beda item)
+  const varianLabel = `${pilihanWarna || ''} ${pilihanSize || ''}`.trim();
+  const cartId = `${produkTerpilih.id}-${varianLabel}`;
+
+  const existing = keranjang.find(i => i.cartId === cartId);
+  if (existing) {
+    existing.qty++;
   } else {
-    const filtered = produk.filter(item => item.kategori === kategori);
-    renderProduk(filtered);
+    keranjang.push({
+      ...produkTerpilih,
+      cartId: cartId, // ID unik keranjang
+      varian: varianLabel,
+      qty: 1
+    });
   }
+
+  updateTampilanKeranjang();
+  tutupDetail();
+  
+  // Animasi Floating Button
+  const btn = document.getElementById('tombolKeranjang');
+  btn.style.transform = "scale(1.2)";
+  setTimeout(() => btn.style.transform = "scale(1)", 200);
 }
 
-// Logic Search
-const searchInput = document.getElementById('searchInput');
-searchInput.addEventListener('input', (e) => {
-  const keyword = e.target.value.toLowerCase();
-  const filtered = produk.filter(item => 
-    item.nama.toLowerCase().includes(keyword) || 
-    item.kategori.toLowerCase().includes(keyword)
-  );
-  renderProduk(filtered);
+// 5. UPDATE KERANJANG (TAMPILKAN FORM NAMA/ALAMAT)
+const updateTampilanKeranjang = () => {
+  const qty = keranjang.reduce((a, b) => a + b.qty, 0);
+  document.getElementById('jmlItem').innerText = qty;
+  document.getElementById('tombolKeranjang').style.display = qty > 0 ? 'flex' : 'none';
+}
+
+window.bukaKeranjang = () => {
+  const list = document.getElementById('listBelanjaan');
+  list.innerHTML = '';
+  let total = 0;
+
+  keranjang.forEach((item, idx) => {
+    const sub = item.harga_jual * item.qty;
+    total += sub;
+    const varianInfo = item.varian ? `<br><small style="color:#64748b">Varian: ${item.varian}</small>` : '';
+    
+    list.innerHTML += `
+      <div class="cart-item">
+        <div>
+          <strong>${item.nama}</strong> ${varianInfo}<br>
+          <small>${item.qty} x ${formatRupiah(item.harga_jual)}</small>
+        </div>
+        <div>
+          <b>${formatRupiah(sub)}</b>
+          <button onclick="hapusItem(${idx})" style="border:none; background:none; color:red; margin-left:5px; cursor:pointer;">✕</button>
+        </div>
+      </div>
+    `;
+  });
+
+  // --- INJECT FORM NAMA & ALAMAT DISINI ---
+  // Kita cek dulu apa formnya udah ada biar gak dobel
+  const modalContent = document.querySelector('#modalKeranjang .modal-content');
+  if (!document.getElementById('formCheckout')) {
+    const formHTML = `
+      <div id="formCheckout" style="margin-top:15px; border-top:1px dashed #e2e8f0; padding-top:15px;">
+        <div style="margin-bottom:10px;">
+          <label style="font-size:0.85rem; font-weight:700; color:#475569;">Nama Penerima</label>
+          <input type="text" id="namaPembeli" placeholder="Contoh: Wildan" style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; margin-top:5px;">
+        </div>
+        <div style="margin-bottom:10px;">
+          <label style="font-size:0.85rem; font-weight:700; color:#475569;">Alamat Lengkap</label>
+          <textarea id="alamatPembeli" placeholder="Jalan, No Rumah, Kecamatan, Kota..." style="width:100%; padding:8px; border:1px solid #cbd5e1; border-radius:6px; margin-top:5px; height:60px;"></textarea>
+        </div>
+      </div>
+    `;
+    // Sisipkan Form SEBELUM Cart Total (biar di atas total harga)
+    const cartTotal = document.querySelector('.cart-total');
+    cartTotal.insertAdjacentHTML('beforebegin', formHTML);
+  }
+
+  document.getElementById('totalHarga').innerText = formatRupiah(total);
+  document.getElementById('modalKeranjang').style.display = 'flex';
+}
+
+window.hapusItem = (idx) => {
+  keranjang.splice(idx, 1);
+  updateTampilanKeranjang();
+  bukaKeranjang();
+  if (keranjang.length === 0) tutupKeranjang();
+}
+window.tutupKeranjang = () => document.getElementById('modalKeranjang').style.display = 'none';
+
+// 6. CHECKOUT WA (FORMAT STRUK LENGKAP)
+window.checkoutWA = () => {
+  if (keranjang.length === 0) return;
+
+  // Validasi Form
+  const nama = document.getElementById('namaPembeli').value;
+  const alamat = document.getElementById('alamatPembeli').value;
+
+  if (!nama || !alamat) {
+    alert("Waduh, Nama sama Alamat wajib diisi ya bosku! 🙏");
+    return;
+  }
+
+  let text = `Hi kak, saya mau order.\n\n`;
+  let totalBelanja = 0;
+
+  keranjang.forEach((item, i) => {
+    const sub = item.harga_jual * item.qty;
+    totalBelanja += sub;
+    
+    // Format Barang:
+    // 1. Nama Barang
+    // Jumlah : 1
+    // Varian : Hitam XL
+    // Harga Total : Rp 100.000
+    
+    text += `${i+1}. *${item.nama}*\n`;
+    text += `Jumlah : ${item.qty}\n`;
+    if(item.varian) text += `Varian : ${item.varian}\n`;
+    text += `Harga Satuan : ${formatRupiah(item.harga_jual)}\n`;
+    text += `Harga Total : ${formatRupiah(sub)}\n\n`;
+  });
+
+  // Footer Struk
+  text += `----------------------------------\n`;
+  text += `Subtotal : ${formatRupiah(totalBelanja)}\n`;
+  text += `Ongkir : (Cek Admin)\n`;
+  text += `*TOTAL : ${formatRupiah(totalBelanja)}* (Belum Ongkir)\n`;
+  text += `----------------------------------\n\n`;
+  
+  // Data Pembeli
+  text += `*Nama :*\n${nama}\n\n`;
+  text += `*Alamat :*\n${alamat}\n\n`;
+  text += `*Pembayaran :*\nTransfer BCA / DANA (Info Admin)`;
+
+  // GANTI NOMOR WA DISINI
+  const noWA = "6285830527310"; 
+  window.open(`https://wa.me/${noWA}?text=${encodeURIComponent(text)}`);
+}
+
+// UTILS
+const convertLink = (link) => {
+  if (link.includes('drive.google.com')) {
+    const id = link.match(/\/d\/(.+?)\//);
+    return id ? `https://drive.google.com/uc?export=view&id=${id[1]}` : link;
+  }
+  return link;
+}
+
+// INITIALIZE
+async function init() {
+  semuaProduk = await ambilDataProduk();
+  renderProduk(semuaProduk);
+}
+window.filterProduk = (k, el) => {
+  document.querySelectorAll('.btn-kategori').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderProduk(k === 'all' ? semuaProduk : semuaProduk.filter(p => p.kategori === k));
+}
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  const k = e.target.value.toLowerCase();
+  renderProduk(semuaProduk.filter(p => p.nama.toLowerCase().includes(k)));
 });
 
-// Logic Modal (Pop Up)
-const kontenInfo = {
-  tentang: {
-    judul: "Tentang Toko Andra",
-    isi: "Toko Andra adalah destinasi fashion pria di Surabaya. Kami menyediakan outfit berkualitas distro dengan harga bersahabat. Berdiri sejak 2025, kami siap melengkapi gayamu!"
-  },
-  cara: {
-    judul: "Cara Pemesanan",
-    isi: "1. Pilih produk.<br>2. Klik <b>Beli Sekarang</b>.<br>3. Terhubung ke WA Admin.<br>4. Kirim chat otomatis.<br>5. Bayar & Tunggu paket datang!"
-  },
-  retur: {
-    judul: "Garansi & Retur",
-    isi: "Salah ukuran? Jangan khawatir. Barang bisa ditukar maksimal 2x24 jam setelah diterima. Wajib sertakan video unboxing ya!"
-  }
-};
-
-window.bukaModal = (kunci) => {
-  const data = kontenInfo[kunci];
-  if(data) {
-    document.getElementById('modalTitle').innerText = data.judul;
-    document.getElementById('modalBody').innerHTML = data.isi;
-    document.getElementById('infoModal').style.display = 'flex';
-  }
-}
-
-window.tutupModal = () => {
-  document.getElementById('infoModal').style.display = 'none';
-}
-
-document.getElementById('infoModal').addEventListener('click', (e) => {
-  if (e.target.id === 'infoModal') tutupModal();
-});
-
-// Render Awal
-renderProduk(produk);
+init();

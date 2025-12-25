@@ -24,10 +24,9 @@ header { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: st
 .search-box { flex-grow: 1; }
 .search-box input { width: 100%; padding: 10px 20px; border-radius: 8px; border: 1px solid var(--border); background: #f8fafc; outline: none; transition: 0.3s; }
 .search-box input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-.header-icons { display: flex; gap: 15px; color: #64748b; cursor: pointer; display: none; } /* Hidden di HP */
 
 /* Navbar Desktop */
-.navbar { background: white; border-bottom: 1px solid #e2e8f0; overflow-x: auto; display: none; } /* Hidden di HP */
+.navbar { background: white; border-bottom: 1px solid #e2e8f0; overflow-x: auto; display: none; }
 .nav-wrapper { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; gap: 25px; }
 .nav-link { padding: 12px 0; text-decoration: none; color: #475569; font-size: 0.9rem; font-weight: 500; white-space: nowrap; cursor: pointer; }
 .nav-link:hover { color: var(--primary); }
@@ -48,7 +47,7 @@ header { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: st
 /* Grid Produk */
 .grid-produk { display: grid; gap: 15px; grid-template-columns: repeat(2, 1fr); /* Default HP 2 Kolom */ }
 
-/* Card */
+/* Card Style */
 .card { background: white; border-radius: 10px; border: 1px solid var(--border); overflow: hidden; display: flex; flex-direction: column; transition: 0.2s; }
 .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
 .card-img-wrapper { background: white; height: 160px; padding: 15px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid #f1f5f9; }
@@ -56,9 +55,15 @@ header { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: st
 .card-body { padding: 12px; display: flex; flex-direction: column; flex-grow: 1; }
 .label-kategori { font-size: 0.65rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; }
 .card h4 { font-size: 0.95rem; margin-bottom: 8px; flex-grow: 1; line-height: 1.4; color: #334155; }
-.harga { color: var(--accent); font-weight: 800; font-size: 1rem; margin-bottom: 12px; }
-.btn-beli { display: block; width: 100%; background: white; color: var(--primary); border: 1px solid var(--primary); text-align: center; padding: 8px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: 0.2s; }
-.btn-beli:hover { background: var(--primary); color: white; }
+
+/* Update Harga Coret */
+.card-harga-wrapper { display: flex; flex-direction: column; margin-bottom: 12px; }
+.harga-coret { text-decoration: line-through; color: #94a3b8; font-size: 0.8rem; margin-bottom: 2px; }
+.harga-jual { color: var(--accent); font-weight: 800; font-size: 1rem; }
+
+/* Tombol Tambah Keranjang */
+.btn-keranjang { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: white; color: var(--primary); border: 1px solid var(--primary); padding: 8px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.9rem; transition: 0.2s; }
+.btn-keranjang:hover { background: var(--primary); color: white; }
 
 /* --- FOOTER --- */
 footer { background: var(--footer-bg); color: #94a3b8; padding: 40px 0 20px; margin-top: auto; }
@@ -74,13 +79,78 @@ footer { background: var(--footer-bg); color: #94a3b8; padding: 40px 0 20px; mar
 .modal-close { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #94a3b8; }
 @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-/* Float WA */
-.float-wa { position: fixed; bottom: 25px; right: 25px; background: var(--wa); color: white; padding: 12px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); display: flex; align-items: center; gap: 8px; z-index: 90; }
+/* Floating Cart */
+.float-cart { position: fixed; bottom: 25px; right: 25px; background: var(--primary); color: white; padding: 15px 20px; border-radius: 50px; font-weight: bold; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); display: none; align-items: center; gap: 10px; cursor: pointer; z-index: 999; animation: popIn 0.3s ease; }
+@keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+
+/* Modal Keranjang Items */
+.cart-items { max-height: 300px; overflow-y: auto; margin-bottom: 15px; border-top: 1px solid #eee; border-bottom: 1px solid #eee; }
+.cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dashed #eee; }
+.cart-total { font-size: 1.1rem; font-weight: bold; text-align: right; margin-bottom: 15px; }
+.btn-checkout { display: block; width: 100%; background: #25D366; color: white; text-align: center; padding: 12px; border-radius: 8px; font-weight: bold; text-decoration: none; border: none; cursor: pointer; }
 
 /* --- RESPONSIVE DESKTOP (Min Width 768px) --- */
 @media (min-width: 768px) {
   .grid-produk { grid-template-columns: repeat(4, 1fr); }
-  .header-icons, .navbar { display: flex; } /* Munculkan Menu Desktop */
+  .header-icons, .navbar { display: flex; }
   .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; }
   .banner { padding: 50px; text-align: left; }
 }
+
+/* --- MODAL DETAIL PRODUK --- */
+.modal-body-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+@media (min-width: 600px) {
+  .modal-body-grid { grid-template-columns: 1fr 1fr; }
+}
+
+.detail-img {
+  width: 100%;
+  border-radius: 8px;
+  background: #f8fafc;
+  object-fit: contain;
+  max-height: 300px;
+}
+
+.detail-info h3 { font-size: 1.2rem; margin-bottom: 5px; line-height: 1.4; }
+.detail-price { font-size: 1.3rem; font-weight: 800; color: var(--accent); margin-bottom: 15px; }
+.detail-desc { font-size: 0.9rem; color: #64748b; line-height: 1.6; margin-bottom: 20px; }
+
+/* Pilihan Varian (Warna/Size) */
+.varian-title { font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+.varian-wrapper { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+
+.btn-varian {
+  padding: 6px 14px;
+  border: 1px solid #cbd5e1;
+  background: white;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: #475569;
+}
+.btn-varian:hover { border-color: var(--primary); color: var(--primary); }
+.btn-varian.selected {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  box-shadow: 0 2px 5px rgba(37, 99, 235, 0.3);
+}
+
+/* Tombol Aksi Detail */
+.detail-actions { margin-top: 20px; }
+.btn-add-cart {
+  width: 100%;
+  padding: 12px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.btn-add-cart:disabled { background: #cbd5e1; cursor: not-allowed; }

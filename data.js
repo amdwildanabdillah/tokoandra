@@ -1,44 +1,34 @@
-export const produk = [
-  {
-    id: 1,
-    nama: "Jaket Monochrome Stuff",
-    harga: 262500,
-    gambar: "https://placehold.co/400x400/eee/31343C?text=Jaket+Mono",
-    kategori: "Jaket"
-  },
-  {
-    id: 2,
-    nama: "Kaos Sepeda Hitam",
-    harga: 72500,
-    gambar: "https://placehold.co/400x400/111/fff?text=Kaos+Hitam",
-    kategori: "Kaos"
-  },
-  {
-    id: 3,
-    nama: "Celana Chino Cream",
-    harga: 150000,
-    gambar: "https://placehold.co/400x400/F5F5DC/555?text=Chino+Cream",
-    kategori: "Celana"
-  },
-  {
-    id: 4,
-    nama: "Hoodie Polos Navy",
-    harga: 185000,
-    gambar: "https://placehold.co/400x400/000080/fff?text=Hoodie+Navy",
-    kategori: "Jaket"
-  },
-  {
-    id: 5,
-    nama: "Kaos Polos White",
-    harga: 65000,
-    gambar: "https://placehold.co/400x400/fff/333?text=Kaos+Putih",
-    kategori: "Kaos"
-  },
-  {
-    id: 6,
-    nama: "Denim Jeans Slim",
-    harga: 210000,
-    gambar: "https://placehold.co/400x400/333/fff?text=Jeans+Slim",
-    kategori: "Celana"
+// data.js
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTTZ15FUg6uEgOUsIumdUL5Fc6N-bAgdVBgjNT4aMmQqOZlwL7c4Uwy_a5_XrfW-0RysVBN-vAcIRol/pub?output=csv'; 
+
+export async function ambilDataProduk() {
+  try {
+    const response = await fetch(SHEET_URL);
+    const text = await response.text();
+    return csvToJson(text);
+  } catch (error) {
+    console.error("Error:", error);
+    return [];
   }
-];
+}
+
+function csvToJson(csvText) {
+  const lines = csvText.split("\n");
+  const result = [];
+  const headers = lines[0].split(",").map(h => h.trim().replace(/\r/g, ""));
+
+  for (let i = 1; i < lines.length; i++) {
+    if (!lines[i]) continue;
+    const obj = {};
+    const currentline = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+
+    for (let j = 0; j < headers.length; j++) {
+      let val = currentline[j] || "";
+      val = val.trim().replace(/\r/g, "");
+      if (val.startsWith('"') && val.endsWith('"')) val = val.substring(1, val.length - 1);
+      obj[headers[j]] = val;
+    }
+    result.push(obj);
+  }
+  return result;
+}
