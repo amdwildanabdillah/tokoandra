@@ -128,7 +128,7 @@ window.checkoutWA = () => {
   const total = keranjang.reduce((a, b) => a + parseInt(b.harga_jual), 0);
   pesan += `\n*Total: ${formatRupiah(total)}*\n\n*Data Pembeli:*\nNama: ${nama}\nEmail: ${email}\nWA: ${wa}\n\nMohon dikirimkan link produknya ya!`;
 
-  window.open(`https://wa.me/6281234567890?text=${encodeURIComponent(pesan)}`);
+  window.open(`https://wa.me/6285830527310?text=${encodeURIComponent(pesan)}`);
 }
 
 // Navigasi & Render lainnya tetap sama...
