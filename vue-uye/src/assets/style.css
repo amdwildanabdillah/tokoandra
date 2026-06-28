@@ -1,0 +1,56 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+/* Biar dark mode class bisa jalan di Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Font utama */
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+
+  /* Palet warna aksen biru */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-900: #1e3a8a;
+
+  /* Palet dark mode elegan */
+  --color-dark-bg: #0f172a;
+  --color-dark-card: #1e293b;
+  --color-dark-border: #334155;
+}
+
+@layer base {
+  html, body {
+    @apply transition-colors duration-300;
+  }
+
+  body {
+    @apply bg-[#f8f8fb] text-slate-900;
+  }
+  
+  .dark body {
+    @apply bg-dark-bg text-slate-50;
+  }
+
+  .dark * {
+    @apply border-slate-700/50;
+  }
+
+  /* Utility untuk sembunyiin scrollbar tapi tetep bisa di-scroll */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Tambahan: biar efek blur lebih 'liquid' dan smooth */
+@layer utilities {
+  .backdrop-blur-2xl {
+    backdrop-filter: blur(24px);
+  }
+}
