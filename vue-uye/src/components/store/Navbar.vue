@@ -1,33 +1,26 @@
 <script setup>
 import ThemeToggle from '@/components/ui/ThemeToggle.vue'
-import BaseInput from '@/components/ui/BaseInput.vue'
-import { ref } from 'vue'
-
-const searchQuery = ref('')
 </script>
 
 <template>
-  <header class="sticky top-0 z-50 bg-white/50 dark:bg-slate-900/50 backdrop-blur-2xl border-b border-white/60 dark:border-slate-700/50 shadow-sm transition-colors duration-300">
-    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+  <nav class="fixed w-full top-0 z-50 glass-panel !border-x-0 !border-t-0 !rounded-none px-6 py-4">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
       
-      <router-link to="/" class="text-2xl tracking-tight text-slate-800 dark:text-white transition-colors">
-        AndraStore.
-      </router-link>
-      
-      <div class="hidden md:block flex-grow max-w-md mx-6">
-        <BaseInput v-model="searchQuery" placeholder="Cari produk digital...">
-          <template #icon>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </template>
-        </BaseInput>
+      <!-- Brand Logo + Icon Glass -->
+      <div class="flex items-center gap-3">
+        <!-- Icon Store sekarang pake Tinted Glass Biru -->
+        <div class="w-10 h-10 rounded-full bg-blue-500/15 dark:bg-blue-400/10 border border-blue-500/20 dark:border-blue-400/20 backdrop-blur-md flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm transition-colors duration-300">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.5a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75h-3.5a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z" />
+          </svg>
+        </div>
+        <h1 class="font-bold text-xl tracking-tight">Toko Andra</h1>
       </div>
 
-      <div class="flex items-center gap-3">
-        <!-- Panggil komponen ThemeToggle yang udah bener tadi -->
+      <div class="flex items-center gap-4">
         <ThemeToggle />
       </div>
+      
     </div>
-  </header>
+  </nav>
 </template>

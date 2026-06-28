@@ -1,28 +1,32 @@
 <script setup>
-defineProps({
-  item: { type: Object, required: true }
+import { computed } from 'vue'
+
+const props = defineProps({
+  item: Object
+})
+
+// Bikin warna tint kaca sesuai kategori
+const categoryColor = computed(() => {
+  switch(props.item.kategori) {
+    case 'Lightroom': return 'bg-blue-500/5 border-blue-500/20 dark:bg-blue-500/10 dark:border-blue-500/30'
+    case 'PPT': return 'bg-orange-500/5 border-orange-500/20 dark:bg-orange-500/10 dark:border-orange-500/30'
+    case 'Canva': return 'bg-purple-500/5 border-purple-500/20 dark:bg-purple-500/10 dark:border-purple-500/30'
+    default: return 'glass-panel'
+  }
 })
 </script>
 
 <template>
-  <div class="group bg-white/60 dark:bg-slate-900/60 backdrop-blur-lg border border-white/80 dark:border-slate-700/50 rounded-3xl p-4 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all duration-300 cursor-pointer flex flex-col">
-    
-    <div class="aspect-square mb-4 rounded-2xl bg-[#f5f5f7]/60 dark:bg-slate-800/50 flex items-center justify-center border border-white/50 dark:border-slate-700/30 overflow-hidden relative">
-      <span class="text-slate-400 dark:text-slate-500 text-sm">Image</span>
-    </div>
-    
-    <span class="text-[11px] tracking-wide text-blue-500 uppercase mb-1.5">{{ item.kategori }}</span>
-    <h3 class="text-base text-slate-800 dark:text-white leading-snug mb-3 line-clamp-2">
-      {{ item.nama }}
-    </h3>
-    
-    <div class="mt-auto flex items-center justify-between">
-      <span class="text-lg text-slate-800 dark:text-white tracking-tight">
-        Rp {{ item.harga_jual.toLocaleString('id-ID') }}
-      </span>
-      <button class="bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 p-2.5 rounded-2xl transition-colors">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4" /></svg>
-      </button>
+  <div 
+    :class="[
+      'rounded-[1.5rem] p-4 cursor-pointer hover:-translate-y-1.5 transition-all duration-300 backdrop-blur-xl border shadow-sm', 
+      categoryColor
+    ]"
+  >
+    <div class="aspect-[4/3] w-full bg-white/50 dark:bg-black/30 rounded-xl mb-4"></div>
+    <div class="px-1">
+      <h3 class="font-semibold text-base leading-snug mb-2 line-clamp-2">{{ item.nama }}</h3>
+      <p class="text-sm font-bold opacity-80">Rp {{ item.harga_jual.toLocaleString('id-ID') }}</p>
     </div>
   </div>
 </template>
